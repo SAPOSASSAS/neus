@@ -1,0 +1,172 @@
+$(".image-enlarge").on("click", function () {
+    var thisImageURL = $(this).attr('data-src');
+    $("#wsModal .modal-body").html("<img  class='img-fluid img-thumbnail img-responsive' src=" + thisImageURL + ">");
+    $("#wsModal .modal-title").html($(this).attr('data-alt'));
+});
+
+$(".show-column-calculated").on("click", function () {
+    $(this).parents('table').find('.column-calculated').removeClass("column-calculated");
+    $(this).hide();
+});
+
+
+//console.log(myapp_config);
+
+
+var backTop = $('.back-top');
+backTop.click(function () {
+    $('html, body').animate({scrollTop: 0}, 300);
+    return false;
+});
+var backTopfade = function () {
+    var topPos = $(this).scrollTop();
+    if (topPos > 100) {
+        backTop.addClass('active');
+    } else {
+        backTop.removeClass('active');
+    }
+		//hide sticky navigation on mobile
+		//&& myapp_config.isMobile == false
+    if (topPos > 500) {
+        $("#marketNav").removeClass("d-none");
+    } else {
+        $("#marketNav").addClass("d-none");
+    }
+}
+$(window).scroll(function (event) {
+        backTopfade();
+    }
+);
+
+backTopfade();
+
+
+//https://github.com/StartBootstrap/startbootstrap-scrolling-nav/blob/master/js/scrolling-nav.js
+(function ($) {
+    "use strict"; // Start of use strict
+
+    // Smooth scrolling using jQuery easing
+    $('a.js-scroll-trigger[href*="#"]:not([href="#"])').click(function (event) {
+        if (location.pathname.replace(/^\//, '') == this.pathname.replace(/^\//, '') && location.hostname == this.hostname) {
+            var target = $(this.hash);
+            target = target.length ? target : $('[name=' + this.hash.slice(1) + ']');
+            if (target.length) {
+                $('html, body').animate({
+                    scrollTop: (target.offset().top - 50)
+                }, 500, "easeInOutExpo");
+								target.addClass('highlighted');
+										setTimeout(function(){
+														target.removeClass('highlighted');
+												},
+										2000
+								);
+                event.preventDefault();
+
+            }
+
+        }
+    });
+
+
+    // Activate scrollspy to add active class to navbar items on scroll
+    $('body').scrollspy({
+        target: '#marketNav',
+        offset: 30
+    });
+
+
+    //popover
+    $('[data-toggle="popover-helper"]').popover({
+        html: true,
+        /* trigger: 'hover', */
+        content: function () {
+            let content = $(this).attr("data-popover-content");
+            return $(content).html();
+        },
+        title: function () {
+            let title = $(this).attr("data-title");
+            return title;
+        }
+    });
+    //Close Popover When Losing Focus
+    $('body').on('click', function (e) {
+        $('[data-toggle="popover-helper"]').each(function () {
+            if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
+                $(this).popover('hide');
+            }
+        });
+    });
+
+    //when we have sticky ads - all modals goes down to keep being visible
+		$('.js-modal-settings, .js-modal-nav-page').on('shown.bs.modal', function () {
+				var padding = parseInt($("body").css("padding-top"));
+				if (padding > 0)
+						$(this).css("top", padding+"px");
+				else
+						$(this).css("top", "0px");
+		})
+
+    $(".select2").select2();
+
+    function icon(elm) {
+        elm.element;
+        return elm.id ? "<i style='' class='d-inline-block icon-make " + $(elm.element).data("icon") + " mr-1'></i>" + "<span class='icon-inside-text'>"+elm.text +"</span>" : "<span class='default'>"+elm.text +"</span>"
+    }
+
+    $(".js-select2-icons").select2(
+        {
+            placeholder: function(){
+								$(this).data("text");
+						},
+						allowClear: true,
+            templateResult: icon,
+            templateSelection: icon,
+            escapeMarkup: function (elm) {
+                return elm
+            }
+        }
+    );
+
+    //check body has class imperial
+    if ($('body').hasClass('system-imperial')) {
+        $("input[id=systemUnitsImperial]").attr('checked', 'checked');
+    }
+
+    //if market is set, activate market setting
+		let market = $('body').attr('pmChoice');
+    if (market) {
+     		$("input[value="+market+"]").attr('checked', 'checked');
+    }
+
+    $('input[type=radio][name=systemUnits]').change(function () {
+
+        if (this.value == 'metric') {
+            $('body').removeClass("system-imperial");
+        } else if (this.value == 'imperial') {
+            $('body').addClass("system-imperial");
+        }
+        saveOnlyParamSetting("systemOutput", this.value);
+    });
+
+		$('input[type=radio][name=pmChoice]').change(function () {
+				$('body').data("pmChoice",this.value);
+
+ 				saveOnlyParamSetting("themeMarket", this.value);
+    });
+
+    //check body has class additional-columns
+    if ($('body').hasClass('additional-columns')) {
+        $("input[id=showCalculatedColunms]").attr('checked', 'checked');
+    }
+
+    $('input[type=checkbox][id=showCalculatedColunms]').change(function () {
+        if (this.checked) {
+            $('body').addClass("additional-columns");
+        } else {
+            $('body').removeClass("additional-columns");
+        }
+        saveOnlyParamSetting("showCalculatedColumns", this.checked);
+        //saveSettings(this.value, );
+    });
+
+})(jQuery); // End of use strict

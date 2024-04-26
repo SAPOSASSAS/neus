@@ -1,0 +1,28 @@
+(function(w) {
+    let Request = function(opts) {
+        this.opts = opts;
+    };
+    Request.prototype = {
+        load: function(method) {
+            let opts = $.extend({}, this.opts);
+            opts.type = method;
+            // Modify the WsRequest utility to support the beforeSend callback
+            if(opts.beforeSend) {
+                let beforeSendResult = opts.beforeSend();
+                if (beforeSendResult === false) {
+                   return $.Deferred().reject("Cancelled due to beforeSend");
+                }
+            }
+
+            return $.ajax(opts);
+        },
+        get: function() {
+            return this.load('get');
+        },
+        post: function() {
+            return this.load('post');
+        }
+    };
+
+    w.WsRequest = Request;
+})(this);
